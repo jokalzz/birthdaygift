@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Beautiful Gallery</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #ffecd2, #fcb69f);
+            color: #333;
+        }
+        header {
+            text-align: center;
+            padding: 2rem 1rem 1rem 1rem;
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #fff;
+            text-shadow: 2px 2px 6px rgba(0,0,0,0.2);
+        }
+        .back-btn {
+            display: block;
+            margin: 0 auto 20px auto;
+            padding: 10px 20px;
+            background: #fff;
+            border: none;
+            border-radius: 25px;
+            font-size: 1rem;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transition: background 0.3s ease, transform 0.2s ease;
+        }
+        .back-btn:hover {
+            background: #ffe0cc;
+            transform: scale(1.05);
+        }
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+        .gallery-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+        .gallery-item:hover {
+            transform: scale(1.05);
+        }
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.4s ease;
+        }
+        .gallery-item:hover img {
+            transform: scale(1.1);
+        }
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.4);
+            opacity: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #fff;
+            font-size: 1.5rem;
+            font-weight: bold;
+            transition: opacity 0.3s ease;
+        }
+        .gallery-item:hover .overlay {
+            opacity: 1;
+        }
+        @media (max-width: 600px) {
+            header {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>My Beautiful Gallery</header>
+    <button class="back-btn" onclick="window.history.back()">⬅ Back</button>
+    <section class="gallery">
+        <div class="gallery-item">
+            <img src="./images/aura20.png" alt="Gallery Image 1" />
+            <div class="overlay">Aura Cantik 1</div>
+        </div>
+        <div class="gallery-item">
+            <img src="./images/aura1.jpg" alt="Gallery Image 2" />
+            <div class="overlay">Aura Cantik 2</div>
+        </div>
+        <div class="gallery-item">
+            <img src="./images/aura2.jpg" alt="Gallery Image 3" />
+            <div class="overlay">Aura Cantik 3</div>
+        </div>
+        <div class="gallery-item">
+            <img src="./images/aura3.jpg" alt="Gallery Image 4" />
+            <div class="overlay">Aura Cantik 4</div>
+        </div>
+        <div class="gallery-item">
+            <img src="./images/aura4.jpg" alt="Gallery Image 5" />
+            <div class="overlay">Aura Cantik 5</div>
+        </div>
+        <div class="gallery-item">
+            <img src="./images/aura5.jpg" alt="Gallery Image 6" />
+            <div class="overlay">Aura Cantik 6</div>
+        </div>
+    </section>
+    <section class="gallery">
+        <div class="gallery-item">
+            <img src="./images/aura6.jpg" alt="Gallery Image 1" />
+            <div class="overlay">Aura Cantik 1</div>
+        </div>
+        <div class="gallery-item">
+            <img src="./images/aura7.jpg" alt="Gallery Image 2" />
+            <div class="overlay">Aura Cantik 2</div>
+        </div>
+        <div class="gallery-item">
+            <img src="./images/aura8.jpg" alt="Gallery Image 3" />
+            <div class="overlay">Aura Cantik 3</div>
+        </div>
+        <div class="gallery-item">
+            <img src="./images/aura9.jpg" alt="Gallery Image 4" />
+            <div class="overlay">Aura Cantik 4</div>
+        </div>
+        <div class="gallery-item">
+            <img src="./images/aura10.jpg" alt="Gallery Image 5" />
+            <div class="overlay">Aura Cantik 5</div>
+        </div>
+        <div class="gallery-item">
+            <img src="./images/aura11.jpg" alt="Gallery Image 6" />
+            <div class="overlay">Aura Cantik 6</div>
+        </div>
+    </section>
+    <section class="gallery">
+        <div class="gallery-item">
+            <img src="./images/aura22.jpg" alt="Gallery Image 1" />
+            <div class="overlay">Aura Cantik 1</div>
+        </div>
+        <div class="gallery-item">
+            <img src="./images/aura21.jpg" alt="Gallery Image 2" />
+            <div class="overlay">Aura Cantik 2</div>
+        </div>
+        <div class="gallery-item">
+            <img src="./images/aura13.jpg" alt="Gallery Image 3" />
+            <div class="overlay">Aura Cantik 3</div>
+        </div>
+        <div class="gallery-item">
+            <img src="./images/aura17.jpg" alt="Gallery Image 4" />
+            <div class="overlay">Aura Cantik 4</div>
+        </div>
+        <div class="gallery-item">
+            <img src="./images/aura19.jpg" alt="Gallery Image 5" />
+            <div class="overlay">Aura Cantik 5</div>
+        </div>
+        <div class="gallery-item">
+            <img src="./images/aura14.jpg" alt="Gallery Image 6" />
+            <div class="overlay">Aura Cantik 6</div>
+        </div>
+    </section>
+</body>
+</html>

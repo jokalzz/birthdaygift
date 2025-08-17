@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Happy Birthday Aura 🎉</title>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@500;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="puzzle.css">
+</head>
+<body>
+
+  <main class="container">
+    
+    <h1>🎂 Welcome Birthday Girl🎂</h1>
+
+    <img src="images/aura.jpg" alt="Aura" class="photo">
+
+    <p class="message">
+      Selamat ulang tahun, Sayang! Ada depe surprise, coba se klar ini teka-teki
+    </p>
+
+    <section class="riddle-card" aria-labelledby="riddle-title">
+      <h2 id="riddle-title">Teka-teki</h2>
+      <p class="riddle">"Aku muncul sekali dalam <em>menit</em>, dua kali dalam <em>momen</em>, tapi tidak muncul dalam <em>ribuan</em>. Siapakah aku?"</p>
+
+      <div class="input-row">
+        <input id="answerInput" type="text" placeholder="Tulis jawabanmu di sini..." aria-label="jawaban teka-teki">
+        <button id="checkBtn">Cek Jawaban</button>
+      </div>
+
+      <div class="controls">
+        <button id="hintBtn" class="linkish">Butuh petunjuk?</button>
+        <button id="resetBtn" class="linkish">Ulangi</button>
+      </div>
+      <br>
+<div class="top-controls">
+    <button id="backBtn"><a href="home.html#thanks">Kembali</a></button>
+    
+  </div>
+      <p id="feedback" class="feedback" role="status" aria-live="polite"></p>
+    </section>
+
+    <p class="note">Kalau kamu benar, ada hadiah spesial yang akan muncul 💝</p>
+  </main>
+
+  <!-- Hidden gift overlay -->
+<div id="giftOverlay" class="overlay hidden" role="dialog" aria-modal="true" aria-hidden="true">
+  <div class="giftBox">
+    <!-- Video Hadiah -->
+    <video id="giftVideo" class="giftVideo" autoplay muted loop playsinline>
+      <source src="videos/samurai.mp4" type="video/mp4">
+      Browser kamu tidak mendukung video HTML5.
+    </video>
+
+    <h3>Selamat! Kamu menemukan hadiahnya 🎁</h3>
+    <p>Aura, semoga hari ini penuh kebahagiaan dan cinta 💖</p>
+    <button id="othergift">Other Gift</button>
+    <p></p>
+    <button id="closeGift">Tutup</button>
+  </div>
+  <canvas id="confettiCanvas" class="confetti"></canvas>
+</div>
+
+  <!-- Optional audio -->
+  <audio id="song" src="audio/song.mp3" preload="auto"></audio>
+
+  <script>
+    // --- teka-teki dan logika ---
+    const answerInput = document.getElementById('answerInput');
+    const checkBtn = document.getElementById('checkBtn');
+    const hintBtn = document.getElementById('hintBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const feedback = document.getElementById('feedback');
+
+    // Jawaban yang diterima (normalisasi: lowercase, hapus spasi/punctuation)
+    const validAnswers = new Set(['m','hurufm','huruf m', "letterm", "letter m", "huruf 'm'"]);
+
+    function normalize(s){
+      return s.toLowerCase().replace(/[^a-z0-9]/g,'');
+    }
+
+    function checkAnswer(){
+      const raw = answerInput.value || '';
+      const norm = normalize(raw);
+
+      // Accept either single letter 'm' or words containing 'm'
+      if (validAnswers.has(norm) || norm === 'm') {
+        feedback.textContent = 'Benar! 🎉 Hadiah akan muncul...';
+        feedback.classList.remove('wrong');
+        feedback.classList.add('right');
+        showGift();
+      } else {
+        feedback.textContent = 'Belum tepat — coba lagi ya 💪';
+        feedback.classList.remove('right');
+        feedback.classList.add('wrong');
+      }
+    }
+
+    checkBtn.addEventListener('click', checkAnswer);
+    answerInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') checkAnswer();
+    });
+
+    hintBtn.addEventListener('click', () => {
+      feedback.textContent = "Petunjuk: Jawaban adalah sebuah huruf. Pikirkan huruf yang ada di kata 'menit' dan 'momen'.";
+      feedback.className = 'feedback hint';
+    });
+
+    resetBtn.addEventListener('click', () => {
+      answerInput.value = '';
+      feedback.textContent = '';
+      feedback.className = 'feedback';
+      answerInput.focus();
+    });
+
+    // --- hadiah + confetti ---
+    const overlay = document.getElementById('giftOverlay');
+    const closeGift = document.getElementById('closeGift');
+    const othergift = document.getElementById('othergift');
+    const song = document.getElementById('song');
+
+    function showGift(){
+      overlay.classList.remove('hidden');
+      overlay.setAttribute('aria-hidden', 'false');
+      startConfetti();
+      // play song if available (catch errors for browsers that block autoplay)
+      if (song && song.src){
+        song.currentTime = 0;
+        song.play().catch(()=>{/* ignore autoplay block; user can press play */});
+      }
+    }
+
+    closeGift.addEventListener('click', () => {
+      overlay.classList.add('hidden');
+      overlay.setAttribute('aria-hidden', 'true');
+      stopConfetti();
+      if (song && !song.paused) song.pause();
+    });
+
+    // Close when clicking outside giftBox
+    overlay.addEventListener('click', (e) => {
+      if (e.target === overlay) closeGift.click();
+    });
+
+othergift.addEventListener('click', () => {
+  window.location.href = "https://bdaycake.com/jokalzz_7732"; 
+});
+
+
+    // --- simple confetti using canvas (no library) ---
+// --- animasi kelopak bunga jatuh ---
+const canvas = document.getElementById('confettiCanvas');
+const ctx = canvas.getContext('2d');
+let petals = [];
+let petalTimer = null;
+
+function resizeCanvas(){
+  canvas.width = overlay.clientWidth;
+  canvas.height = overlay.clientHeight;
+}
+window.addEventListener('resize', resizeCanvas);
+
+function rand(min, max) { return Math.random()*(max-min)+min; }
+
+function createPetals(){
+  petals = [];
+  const colors = ['#ffb7c5', '#ffc0cb', '#ffd6e0', '#ffe4e9']; // variasi pink lembut
+  for (let i=0;i<35;i++){
+    petals.push({
+      x: rand(0, canvas.width),
+      y: rand(-canvas.height, 0),
+      size: rand(15, 28),
+      color: colors[Math.floor(rand(0,colors.length))],
+      speedY: rand(0.8, 2),
+      sway: rand(0.5, 2.5),
+      swayStep: rand(0.01, 0.03),
+      angle: rand(0, Math.PI * 2),
+      rotation: rand(0, 360),
+      rotSpeed: rand(-0.3, 0.3)
+    });
+  }
+}
+
+function drawPetals(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  for (const p of petals){
+    ctx.save();
+    ctx.translate(p.x, p.y);
+    ctx.rotate(p.rotation * Math.PI / 180);
+    ctx.fillStyle = p.color;
+    ctx.beginPath();
+    // bentuk kelopak sederhana (ellipse)
+    ctx.ellipse(0, 0, p.size/2, p.size/3, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+
+    // gerakan jatuh
+    p.y += p.speedY;
+    p.x += Math.sin(p.angle) * p.sway;
+    p.angle += p.swayStep;
+    p.rotation += p.rotSpeed;
+
+    if (p.y > canvas.height + 20){
+      p.y = -10;
+      p.x = rand(0, canvas.width);
+    }
+  }
+}
+
+function startConfetti(){ // fungsi tetap sama namanya supaya kode lain gak error
+  resizeCanvas();
+  createPetals();
+  if (petalTimer) cancelAnimationFrame(petalTimer);
+  (function loop(){
+    drawPetals();
+    petalTimer = requestAnimationFrame(loop);
+  })();
+  // stop setelah 12 detik
+  setTimeout(stopConfetti, 12000);
+}
+
+function stopConfetti(){
+  if (petalTimer) cancelAnimationFrame(petalTimer);
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  petals = [];
+}
+
+  </script>
+</body>
+</html>

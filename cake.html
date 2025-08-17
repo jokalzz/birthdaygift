@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Animated Birthday Cake - Tiup Lilinnya!</title>
+  <style>
+    body {
+      background-color: #333;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    .instructions {
+      color: #f0e4d0;
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 18px;
+    }
+
+    .cake {
+      position: relative;
+      width: 250px;
+      height: 200px;
+      cursor: pointer;
+      transition: transform 0.1s ease;
+    }
+
+    .cake:hover {
+      transform: scale(1.02);
+    }
+
+    /* Tumpuan kue */
+    .plate {
+      position: absolute;
+      bottom: -10px;
+      left: -10px;
+      width: 270px;
+      height: 110px;
+      background-color: #ccc;
+      border-radius: 50%;
+      box-shadow: 0 2px 0 rgba(0,0,0,0.2), 0 4px 0 rgba(0,0,0,0.2), 0 5px 40px rgba(0, 0, 0, 0.5);
+    }
+
+    /* Lapisan kue */
+    .layer {
+      position: absolute;
+      width: 250px;
+      height: 100px;
+      border-radius: 50%;
+      background-color: #553c13;
+    }
+    .layer-top    { top: 0; }
+    .layer-middle { top: 33px; }
+    .layer-bottom { top: 66px; }
+
+    /* Icing krim atas */
+    .icing {
+      position: absolute;
+      top: 2px;
+      left: 5px;
+      width: 240px;
+      height: 90px;
+      border-radius: 50%;
+      background-color: #f0e4d0;
+      box-shadow: 0 0 4px rgba(255,255,255,0.7);
+    }
+
+    /* Tetesan icing */
+    .drip {
+      position: absolute;
+      background-color: #f0e4d0;
+      border-bottom-left-radius: 25px;
+      border-bottom-right-radius: 25px;
+    }
+    .drip1 {
+      top: 53px; left: 5px;
+      width: 40px; height: 48px;
+      transform: skewY(15deg);
+    }
+    .drip2 {
+      top: 69px; left: 181px;
+      width: 50px; height: 60px;
+      transform: skewY(-15deg);
+    }
+    .drip3 {
+      top: 54px; left: 90px;
+      width: 80px; height: 60px;
+      border-radius: 0 0 40px 40px;
+    }
+
+    /* Lilin */
+    .candle {
+      position: absolute;
+      top: -20px;
+      left: 50%;
+      width: 16px;
+      height: 50px;
+      margin-left: -8px;
+      background-color: #7B020B;
+      border-radius: 8px / 4px;
+      transition: all 0.3s ease;
+    }
+    .candle::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      width: 16px;
+      height: 8px;
+      background-color: #94030F;
+      border-radius: 50%;
+    }
+
+    /* Api lilin dengan animasi flicker */
+    .flame {
+      position: absolute;
+      top: -34px;
+      left: 50%;
+      width: 15px;
+      height: 35px;
+      margin-left: -7.5px;
+      background-color: orange;
+      border-radius: 10px 10px 10px 10px / 25px 25px 10px 10px;
+      box-shadow:
+        0 0 10px rgba(255,165,0,0.5),
+        0 0 20px rgba(255,165,0,0.5),
+        0 0 60px rgba(255,165,0,0.5),
+        0 0 80px rgba(255,165,0,0.5);
+      transform-origin: 50% 90%;
+      animation: flicker 1s ease-in-out infinite alternate;
+      opacity: 1;
+      transition: all 0.5s ease;
+    }
+
+    /* Efek hembusan angin */
+    .blowing .flame {
+      animation: blowOut 0.5s ease-out forwards;
+    }
+
+    /* Efek api padam */
+    .flame.extinguished {
+      opacity: 0;
+      transform: scale(0.1) translateY(-20px);
+      animation: none;
+    }
+
+    /* Asap setelah api padam */
+    .smoke {
+      position: absolute;
+      top: -45px;
+      left: 50%;
+      width: 3px;
+      height: 30px;
+      margin-left: -1.5px;
+      background: linear-gradient(to top, 
+        rgba(128,128,128,0.8) 0%, 
+        rgba(128,128,128,0.4) 50%, 
+        rgba(128,128,128,0.1) 100%);
+      border-radius: 50%;
+      opacity: 0;
+      transform: translateY(10px);
+      animation: none;
+    }
+
+    .smoke.visible {
+      animation: smokeRise 3s ease-out forwards;
+    }
+
+    /* Status message */
+    .status {
+      color: #f0e4d0;
+      text-align: center;
+      margin-top: 20px;
+      font-size: 16px;
+      min-height: 25px;
+    }
+
+    .reset-btn {
+      background-color: #7B020B;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 25px;
+      cursor: pointer;
+      font-size: 14px;
+      margin-top: 15px;
+      transition: background-color 0.3s ease;
+    }
+
+    .reset-btn:hover {
+      background-color: #94030F;
+    }
+
+    /* Animasi */
+    @keyframes flicker {
+      0%   { transform: skewX(5deg);   opacity: 0.8; }
+      50%  { transform: skewX(-5deg);  opacity: 1; }
+      100% { transform: skewX(5deg);   opacity: 0.8; }
+    }
+
+    @keyframes blowOut {
+      0%   { 
+        transform: skewX(5deg) scale(1); 
+        opacity: 1; 
+      }
+      30%  { 
+        transform: skewX(-15deg) scale(1.2); 
+        opacity: 0.8; 
+      }
+      70%  { 
+        transform: skewX(-25deg) scale(0.8); 
+        opacity: 0.4; 
+      }
+      100% { 
+        transform: skewX(-30deg) scale(0.1); 
+        opacity: 0; 
+      }
+    }
+
+    @keyframes smokeRise {
+      0% {
+        opacity: 0;
+        transform: translateY(10px) scale(0.5);
+      }
+      20% {
+        opacity: 0.8;
+        transform: translateY(0px) scale(1);
+      }
+      100% {
+        opacity: 0;
+        transform: translateY(-30px) scale(1.5);
+      }
+    }
+
+    /* Efek partikel berkilau */
+    .sparkle {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      background: gold;
+      border-radius: 50%;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .sparkle.animate {
+      animation: sparkleFloat 2s ease-out forwards;
+    }
+
+    @keyframes sparkleFloat {
+      0% {
+        opacity: 1;
+        transform: translateY(0) scale(0);
+      }
+      50% {
+        opacity: 1;
+        transform: translateY(-30px) scale(1);
+      }
+      100% {
+        opacity: 0;
+        transform: translateY(-60px) scale(0);
+      }
+    }
+
+    /* Container untuk pernak-pernik */
+    .confetti-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 1000;
+    }
+
+    /* Pernak-pernik jatuh */
+    .confetti {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      opacity: 0.8;
+      pointer-events: none;
+    }
+
+    .confetti.heart {
+      background: #ff69b4;
+      border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+      transform: rotate(-45deg);
+    }
+
+    .confetti.heart::before {
+      content: '';
+      position: absolute;
+      width: 8px;
+      height: 12px;
+      background: #ff69b4;
+      border-radius: 50px 50px 0 0;
+      transform: rotate(-45deg);
+      top: -5px;
+      left: -1px;
+    }
+
+    .confetti.heart::after {
+      content: '';
+      position: absolute;
+      width: 8px;
+      height: 12px;
+      background: #ff69b4;
+      border-radius: 50px 50px 0 0;
+      transform: rotate(45deg);
+      top: -5px;
+      right: -1px;
+    }
+
+    .confetti.star {
+      background: gold;
+      clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+    }
+
+    .confetti.circle {
+      border-radius: 50%;
+    }
+
+    .confetti.square {
+      border-radius: 2px;
+    }
+
+    .confetti.triangle {
+      width: 0;
+      height: 0;
+      border-left: 4px solid transparent;
+      border-right: 4px solid transparent;
+      border-bottom: 8px solid;
+    }
+
+    /* Animasi jatuh dengan variasi */
+    @keyframes fall1 {
+      0% {
+        transform: translateY(-100px) rotate(0deg);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(100vh) rotate(360deg);
+        opacity: 0.3;
+      }
+    }
+
+    @keyframes fall2 {
+      0% {
+        transform: translateY(-100px) rotate(0deg);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(100vh) rotate(-360deg);
+        opacity: 0.3;
+      }
+    }
+
+    @keyframes fall3 {
+      0% {
+        transform: translateY(-100px) rotate(0deg) translateX(0px);
+        opacity: 1;
+      }
+      50% {
+        transform: translateY(50vh) rotate(180deg) translateX(20px);
+        opacity: 0.8;
+      }
+      100% {
+        transform: translateY(100vh) rotate(360deg) translateX(-10px);
+        opacity: 0.3;
+      }
+    }
+
+    @keyframes sway {
+      0%, 100% {
+        transform: translateX(0px);
+      }
+      25% {
+        transform: translateX(15px);
+      }
+      75% {
+        transform: translateX(-15px);
+      }
+    }
+
+    /* Pernak-pernik khusus untuk saat lilin padam */
+    .celebration-active .confetti {
+      animation-duration: 3s !important;
+    }
+  </style>
+  <script>
+    document.addEventListener('click', function() {
+      window.location.href = 'home.html';
+    });
+  </script>
+</head>
+<body>
+  <div class="confetti-container" id="confettiContainer"></div>
+  
+  <div class="instructions">
+    🎂 Klik pada kue untuk meniup lilinnya! 🕯️
+  </div>
+  <p></p>
+  <p></p>
+  
+  <div class="cake" id="cake">
+    <div class="plate"></div>
+    <div class="layer layer-bottom"></div>
+    <div class="layer layer-middle"></div>
+    <div class="layer layer-top"></div>
+    <div class="icing"></div>
+    <div class="drip drip1"></div>
+    <div class="drip drip2"></div>
+    <div class="drip drip3"></div>
+    <div class="candle">
+      <div class="flame" id="flame"></div>
+      <div class="smoke" id="smoke"></div>
+    </div>
+  </div>
+
+  <div class="status" id="status">Api lilin menyala terang ✨</div>
+  
+  <button class="reset-btn" id="resetBtn" onclick="resetCandle()" style="display: none;">
+    🔥 Nyalakan Lagi
+  </button>
+
+  <script>
+    let isExtinguished = false;
+    let confettiInterval;
+    const cake = document.getElementById('cake');
+    const flame = document.getElementById('flame');
+    const smoke = document.getElementById('smoke');
+    const status = document.getElementById('status');
+    const resetBtn = document.getElementById('resetBtn');
+    const confettiContainer = document.getElementById('confettiContainer');
+
+    // Array warna untuk pernak-pernik
+    const confettiColors = [
+      '#ff69b4', '#ffd700', '#00bfff', '#98fb98', 
+      '#ffa500', '#da70d6', '#ff6347', '#40e0d0',
+      '#ffb6c1', '#90ee90', '#f0e68c', '#dda0dd'
+    ];
+
+    // Array bentuk pernak-pernik
+    const confettiShapes = ['circle', 'square', 'triangle', 'star', 'heart'];
+
+    // Fungsi untuk membuat satu pernak-pernik
+    function createConfetti() {
+      const confetti = document.createElement('div');
+      confetti.className = `confetti ${confettiShapes[Math.floor(Math.random() * confettiShapes.length)]}`;
+      
+      // Posisi random di atas layar
+      confetti.style.left = Math.random() * 100 + '%';
+      confetti.style.top = '-20px';
+      
+      // Warna random
+      const color = confettiColors[Math.floor(Math.random() * confettiColors.length)];
+      
+      if (confetti.classList.contains('circle') || confetti.classList.contains('square')) {
+        confetti.style.backgroundColor = color;
+      } else if (confetti.classList.contains('triangle')) {
+        confetti.style.borderBottomColor = color;
+      }
+      
+      // Ukuran random
+      const size = Math.random() * 6 + 4; // 4-10px
+      if (!confetti.classList.contains('triangle')) {
+        confetti.style.width = size + 'px';
+        confetti.style.height = size + 'px';
+      }
+      
+      // Animasi random
+      const animations = ['fall1', 'fall2', 'fall3'];
+      const animationType = animations[Math.floor(Math.random() * animations.length)];
+      const duration = Math.random() * 3 + 2; // 2-5 detik
+      const delay = Math.random() * 2; // 0-2 detik delay
+      
+      confetti.style.animation = `${animationType} ${duration}s linear ${delay}s infinite`;
+      
+      // Tambah efek sway untuk beberapa partikel
+      if (Math.random() < 0.3) {
+        confetti.style.animation += `, sway ${Math.random() * 2 + 1}s ease-in-out infinite`;
+      }
+      
+      confettiContainer.appendChild(confetti);
+      
+      // Hapus setelah animasi selesai
+      setTimeout(() => {
+        if (confetti.parentNode) {
+          confetti.remove();
+        }
+      }, (duration + delay) * 1000);
+    }
+
+    // Fungsi untuk memulai hujan pernak-pernik
+    function startConfetti() {
+      document.body.classList.add('celebration-active');
+      confettiInterval = setInterval(() => {
+        // Buat 2-4 pernak-pernik sekaligus
+        const count = Math.floor(Math.random() * 3) + 2;
+        for (let i = 0; i < count; i++) {
+          setTimeout(() => createConfetti(), i * 100);
+        }
+      }, 200);
+    }
+
+    // Fungsi untuk menghentikan hujan pernak-pernik
+    function stopConfetti() {
+      document.body.classList.remove('celebration-active');
+      if (confettiInterval) {
+        clearInterval(confettiInterval);
+        confettiInterval = null;
+      }
+      
+      // Bersihkan pernak-pernik yang tersisa setelah 5 detik
+      setTimeout(() => {
+        const remainingConfetti = confettiContainer.querySelectorAll('.confetti');
+        remainingConfetti.forEach(confetti => {
+          confetti.style.animation = 'none';
+          confetti.style.opacity = '0';
+          setTimeout(() => confetti.remove(), 500);
+        });
+      }, 5000);
+    }
+
+    // Fungsi ledakan pernak-pernik saat lilin padam
+    function createCelebrationBurst() {
+      // Ledakan besar pernak-pernik
+      for (let i = 0; i < 30; i++) {
+        setTimeout(() => {
+          createConfetti();
+        }, i * 50);
+      }
+      
+      // Mulai hujan pernak-pernik berkelanjutan
+      setTimeout(() => {
+        startConfetti();
+      }, 1500);
+    }
+
+    // Fungsi untuk meniup lilin
+    function blowCandle() {
+      if (isExtinguished) return;
+      
+      isExtinguished = true;
+      cake.classList.add('blowing');
+      
+      // Efek suara tiup (simulasi dengan vibration jika tersedia)
+      if (navigator.vibrate) {
+        navigator.vibrate(200);
+      }
+      
+      // Animasi api padam
+      setTimeout(() => {
+        flame.classList.add('extinguished');
+        smoke.classList.add('visible');
+        status.textContent = 'Selamat! Lilin berhasil ditiup! 🎉';
+        resetBtn.style.display = 'block';
+        
+        // Efek berkilau
+        createSparkles();
+        
+        // Ledakan pernak-pernik perayaan
+        createCelebrationBurst();
+      }, 500);
+      
+      // Reset kelas blowing
+      setTimeout(() => {
+        cake.classList.remove('blowing');
+      }, 1000);
+    }
+
+    // Fungsi untuk menyalakan lilin kembali
+    function resetCandle() {
+      isExtinguished = false;
+      flame.classList.remove('extinguished');
+      smoke.classList.remove('visible');
+      cake.classList.remove('blowing');
+      status.textContent = 'Api lilin menyala terang ✨';
+      resetBtn.style.display = 'none';
+      
+      // Hentikan hujan pernak-pernik
+      stopConfetti();
+    }
+
+    // Fungsi membuat efek berkilau
+    function createSparkles() {
+      for (let i = 0; i < 6; i++) {
+        setTimeout(() => {
+          const sparkle = document.createElement('div');
+          sparkle.className = 'sparkle';
+          sparkle.style.left = Math.random() * 200 + 25 + 'px';
+          sparkle.style.top = Math.random() * 50 + 50 + 'px';
+          
+          cake.appendChild(sparkle);
+          
+          setTimeout(() => {
+            sparkle.classList.add('animate');
+          }, 10);
+          
+          setTimeout(() => {
+            sparkle.remove();
+          }, 2000);
+        }, i * 100);
+      }
+    }
+
+    // Pernak-pernik ambient yang jatuh secara acak
+    function ambientConfetti() {
+      if (!isExtinguished && Math.random() < 0.1) { // 10% chance setiap 2 detik
+        createConfetti();
+      }
+    }
+
+    // Event listeners
+    cake.addEventListener('click', blowCandle);
+    
+    // Efek hover tambahan
+    cake.addEventListener('mouseenter', () => {
+      if (!isExtinguished) {
+        status.textContent = 'Klik untuk meniup lilinnya! 💨';
+      }
+    });
+    
+    cake.addEventListener('mouseleave', () => {
+      if (!isExtinguished) {
+        status.textContent = 'Api lilin menyala terang ✨';
+      }
+    });
+
+    // Keyboard support (spasi untuk meniup)
+    document.addEventListener('keydown', (e) => {
+      if (e.code === 'Space') {
+        e.preventDefault();
+        blowCandle();
+      }
+      if (e.code === 'Enter' && isExtinguished) {
+        resetCandle();
+      }
+    });
+
+    // Mulai pernak-pernik ambient
+    setInterval(ambientConfetti, 2000);
+  </script>
+</body>
+</html>
