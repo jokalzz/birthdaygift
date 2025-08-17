@@ -171,6 +171,22 @@
       animation: smokeRise 3s ease-out forwards;
     }
 
+     .next-btn {
+      display: inline-block;
+      padding: 12px 24px;
+      background: #ff69b4;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .next-btn:hover {
+      background: #ff1493;
+    }
+
     /* Status message */
     .status {
       color: #f0e4d0;
@@ -394,13 +410,10 @@
       animation-duration: 3s !important;
     }
   </style>
-  <script>
-    document.addEventListener('click', function() {
-      window.location.href = 'home.html';
-    });
-  </script>
+  
 </head>
 <body>
+   
   <div class="confetti-container" id="confettiContainer"></div>
   
   <div class="instructions">
@@ -429,6 +442,16 @@
   <button class="reset-btn" id="resetBtn" onclick="resetCandle()" style="display: none;">
     🔥 Nyalakan Lagi
   </button>
+<p></p>
+<p></p>
+  <button id="goNext" class="next-btn">Ke Halaman Selanjutnya ➡️</button>
+
+  <script>
+    const nextBtn = document.getElementById('goNext');
+    nextBtn.addEventListener('click', () => {
+      window.location.href = 'home.html'; // ganti dengan lokasi file tujuan
+    });
+  </script>
 
   <script>
     let isExtinguished = false;
